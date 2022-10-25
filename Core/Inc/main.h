@@ -9,6 +9,7 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "circular_module.h"
+#include "circular_module_config.h"
 
 /* Private includes ----------------------------------------------------------*/
 
@@ -22,13 +23,12 @@ extern "C" {
 void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
-#define BUFFER_SIZE    100U /*<< Размер кольцевого буфера в байтах */
-
+/*
 #define LED2_Pin GPIO_PIN_6
 #define LED2_GPIO_Port GPIOA
 #define LED3_Pin GPIO_PIN_7
 #define LED3_GPIO_Port GPIOA
-
+*/
 #ifdef __cplusplus
 }
 #endif

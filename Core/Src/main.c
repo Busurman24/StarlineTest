@@ -15,7 +15,7 @@ TIM_HandleTypeDef htim6;
 UART_HandleTypeDef huart1;
 
 /*<< Переменные кольцевого буфера */
-uint8_t buff_array[BUFFER_SIZE];
+uint8_t buff_array[SIZE_BUFF];
 circular_buffer_t m_buffer;
 
 
@@ -50,11 +50,9 @@ int main(void)
   SystemClock_Config();
 
   /* Initialize all configured peripherals */
-//  MX_GPIO_Init();
   MX_RNG_Init();
-//  MX_TIM6_Init();
 
-  buffer_init(&m_buffer, buff_array, (uint16_t)BUFFER_SIZE, uart_send_handler);
+  buffer_init(&m_buffer, buff_array, (uint16_t)SIZE_BUFF, uart_send_handler);
   uart_init(uart_init_handler);
 
   while (1)
@@ -184,31 +182,6 @@ static void MX_TIM6_Init(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED2_Pin|LED3_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : LED2_Pin LED3_Pin */
-  GPIO_InitStruct.Pin = LED2_Pin|LED3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
 }
 
  /**
