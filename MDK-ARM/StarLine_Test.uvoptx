@@ -163,7 +163,7 @@
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>buff_array</ItemText>
+          <ItemText>buff_array,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
@@ -173,7 +173,7 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>m_counter</ItemText>
+          <ItemText>m_counter,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

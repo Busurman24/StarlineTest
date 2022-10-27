@@ -19,7 +19,6 @@
 static uart_send_handler_t m_uart_send_callback;
 
 volatile static uint8_t m_synch_flag = TRUE;
-volatile static uint8_t m_counter = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -106,7 +105,6 @@ void uart_init(uart_init_handler_t uart_init_handler)
 
 void uart_event_transmit(circular_buffer_t *buf)
 {
-    m_counter++;
     uint8_t databyte;
     if((buf->mutex == FALSE) && (buf->end != buf->start)){
         if(m_uart_send_callback != 0){
