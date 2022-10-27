@@ -18,7 +18,8 @@
 /* Private variables ---------------------------------------------------------*/
 static uart_send_handler_t m_uart_send_callback;
 
-static uint8_t m_synch_flag = TRUE;
+volatile static uint8_t m_synch_flag = TRUE;
+volatile static uint8_t m_counter = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -39,23 +40,21 @@ void put_byte_to_buffer(uint8_t databyte, circular_buffer_t *buf)
     if(buf->end == buf->start){
         buf->start++;
         buf->start %= buf->size; /**< Как только индекс начала буфера превысит
-                    макс. индек массива m_buffer, значение m_start обнулится */
+                    макс. индек массива m_buffer, значение start обнулится */
     }
 
-    /**< Как только буфер получает первый байт данных, вызывается callback
-        отправки по UART. Если буфер заполняется быстрее, чем выполняется
-        отпрравка по UART, то последующая передача инициируется из
-        обработчика прерывания UART */
     if(m_synch_flag == TRUE){
         m_synch_flag = FALSE;
         if(m_uart_send_callback != 0){
             buf->start++;
             buf->start %= buf->size; /**< Как только индекс начала буфера превысит
-                    макс. индек массива m_buffer, значение m_start обнулится */
+                    макс. индек массива m_buffer, значение start обнулится */
             buf->mutex = FALSE; /**< Возврат мьютекса */
-            m_uart_send_callback(databyte);
+            m_uart_send_callback(databyte); /**< Как только буфер получает первый 
+                              байт данных, вызывается callback отправки по UART */
         }
     }
+    buf->mutex = FALSE; /**< Возврат мьютекса */
 }
 
 uint8_t pop_byte_from_buffer(circular_buffer_t *buf)
@@ -69,7 +68,7 @@ uint8_t pop_byte_from_buffer(circular_buffer_t *buf)
     buf->mutex = TRUE; /**< Захват мьютекса */
     uint8_t databyte = buf->buffer[buf->start++];
     buf->start %= buf->size; /**< Как только индекс начала буфера 
-    превысит макс. индек массива m_buffer, значение m_start обнулится */
+    превысит макс. индек массива m_buffer, значение start обнулится */
 
     if(buf->end == buf->start){
         m_synch_flag = TRUE;
@@ -107,17 +106,19 @@ void uart_init(uart_init_handler_t uart_init_handler)
 
 void uart_event_transmit(circular_buffer_t *buf)
 {
+    m_counter++;
     uint8_t databyte;
     if((buf->mutex == FALSE) && (buf->end != buf->start)){
         if(m_uart_send_callback != 0){
             databyte = buf->buffer[buf->start++];
             buf->start %= buf->size; /**< Как только индекс начала буфера 
-            превысит макс. индек массива m_buffer, значение m_start 
+            превысит макс. индек массива m_buffer, значение start 
             обнулится */
+            m_synch_flag = TRUE;
             m_uart_send_callback(databyte);
         }
-    } else if((buf->mutex != FALSE) || (buf->end == buf->start)){
-            m_synch_flag = TRUE;
+    } else {
+        m_synch_flag = TRUE;
     }
 }
 
